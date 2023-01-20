@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class PlayerController : MonoBehaviour
 {
@@ -16,20 +17,34 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float xInput = Input.GetAxis("Horizontal");
-        
-        
-        //실제 이동 속도를 입력값과 이동 속력을 사용해 결정
-        float xSpeed = xInput*speed;
+        float xInput = Input.GetAxis("Horizontal");       
         
 
-        //Vector3 속도를 (xSpeed, 0, zSpeed)로 생성
-        Vector3 newVelocity = new Vector3();
-        newVelocity =new Vector3(xSpeed, 0f, 0f);
+        float xSpeed = xInput*speed;
         
-        //리지드바디의 속도에 newVelocity 할당
-        playerRigidbody.velocity = newVelocity;       
+        Vector3 newVelocity = new Vector3();
+        Vector3 pos = this.transform.position;
+
+        newVelocity = new Vector3(xSpeed, 0f, 0f);
+        
+    
+        playerRigidbody.velocity = newVelocity;
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            var bullet = ObjectPool.GetObject(); 
+            if (bullet != null)
+            {
+
+                var direction = new Vector3(0, 0, 0.03f);
+                bullet.transform.position = pos;
+                bullet.Shoot(direction);
+
+            }
+            else { }
+
+        }
     }
+
 
     public void Die() 
     {

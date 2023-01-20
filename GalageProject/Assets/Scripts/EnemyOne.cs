@@ -7,37 +7,55 @@ public class EnemyOne : MonoBehaviour
 {
     public float Espeed = 10f;
     private Rigidbody enemyRigidbody;
-
+    private Vector3 direction = default;
     
+    
+    public void Shoot(Vector3 direction)
+    {
+        this.direction = direction;
+        transform.LookAt(direction);
+        enemyRigidbody.velocity = transform.forward * Espeed;        
+
+        Invoke("DestroyEnemyOne", 4f);
+    }
+    private void Awake()
+    {
+        enemyRigidbody = GetComponent<Rigidbody>();
+    }
     void Start()
     {
+         
         
-        enemyRigidbody = GetComponent<Rigidbody>();
-
-        enemyRigidbody.velocity = transform.forward * Espeed;
+       
+    }
+    private void Update()
+    {
         
-        Destroy(gameObject, 4f);
     }
     void OnTriggerEnter(Collider other) 
     {
         //충돌한 상대방 게임 오브젝트가 Player 태그를 가진 경우
         if(other.tag == "Player")
         {
-            //상대방 게임 오브젝트에서 PlayerController 컴포넌트 가져오기
             PlayerController playerController = other.GetComponent<PlayerController>();
-
-            //상대방으로부터 PlayerController 컴포넌트를 가져오는 데 성공했다면
+                       
             if(playerController != null)
             {
-                //상대방 PlayerController 컴포넌트의 Die()메서드 실행
+                
                 playerController.Die();
+                this.Die();
             }
         }
     }
-
-    
-    void Update()
+    public void Die()
     {
-        
+        Invoke("DestroyEnemyOne", 0);
     }
+
+    public void DestroyEnemyOne() 
+    {
+        EnemyPooling.ReturnObject(this);
+        CancelInvoke();
+    }
+    
 }
